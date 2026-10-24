@@ -1,0 +1,23 @@
+{
+  "IFM/K2-Horizon-0.9B": {
+    "precision": "fp16",
+    "max_ctx_len": 65536,
+    "matrices": {
+      "default": "benchmark_matrix_0_9b.json",
+      "serving": "benchmark_matrix_serving_0_9b.json",
+      "client": "benchmark_matrix_client_0_9b.json"
+    },
+    "note": "MXFP6 weights degrade the output (the first four layers are sensitive); the rotary tables of the K2 wrapper stop at 65536"
+  },
+  "IFM/K2-Horizon-3.7B": {"max_ctx_len": 65536},
+  "IFM/K2-Horizon-7B": {"max_ctx_len": 65536},
+  "IFM/K2-Horizon-32B": {
+    "max_ctx_len": 65536,
+    "matrices": {"default": "benchmark_matrix_32b.json"},
+    "note": "does not fit one device, its default matrix has 4-device cases only"
+  },
+  "openai/gpt-oss-120b": {
+    "params_b": 116.8,
+    "note": "the MXFP4 checkpoint packs two weights per byte, so the safetensors count reads 63B"
+  }
+}

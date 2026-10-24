@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 
 """
-Benchmark a K2 Horizon model on Cloud AI 100 over a matrix of configurations.
+Benchmark one LLM on Cloud AI 100 over a matrix of configurations.
 
 For every entry in the matrix file: compile (cached by QEfficient), run a warm-up,
 then `--repeats` timed runs while sampling board power with qaic-util, and append
@@ -220,18 +220,6 @@ def failed_row(case, model_name, status, error):
     return {**case_fields(case, model_name), "status": status, "error": error}
 
 
-def compile_key(case):
-    """Cases with the same key share one QPC; only the prompt and output lengths differ."""
-    return (
-        tuple(case["devices"]),
-        case.get("mxfp6", False),
-        case.get("mxint8_kv_cache", False),
-        case["prefill_seq_len"],
-        case["ctx_len"],
-        case.get("batch_size", 1),
-    )
-
-
 def load_and_compile(case, args):
     batch_size = case.get("batch_size", 1)
     continuous_batching = batch_size > 1
@@ -325,10 +313,10 @@ def run_case(case, args, tokenizer):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="K2 Horizon benchmark matrix on Cloud AI 100")
-    parser.add_argument("--model-name", default="IFM/K2-Horizon-7B")
+    parser = argparse.ArgumentParser(description="LLM benchmark matrix on Cloud AI 100")
+    parser.add_argument("--model-name", required=True)
     parser.add_argument("--matrix", default=str(Path(__file__).parent / "matrices" / "benchmark_matrix.json"))
-    parser.add_argument("--out", default="k2_horizon_benchmark.csv")
+    parser.add_argument("--out", default="qaic_benchmark.csv")
     parser.add_argument("--only", nargs="*", help="Run only these matrix ids")
     parser.add_argument("--repeats", type=int, default=3, help="Timed runs per case, after one warm-up")
     parser.add_argument("--num-cores", type=int, default=16)
