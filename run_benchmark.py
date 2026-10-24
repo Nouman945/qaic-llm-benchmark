@@ -47,6 +47,11 @@ from pathlib import Path
 
 from model_info import estimate_memory_gb, fits, load_model_info, memory_budget_gb
 
+try:
+    import psutil
+except ImportError:  # not a QEfficient dependency; host RAM is then not recorded
+    psutil = None
+
 HERE = Path(__file__).resolve().parent
 MATRICES = HERE / "matrices"
 MODELS_FILE = HERE / "models.json"
@@ -290,6 +295,7 @@ def collect_metadata(env):
         "qefficient_branch": branch,
         "benchmark_commit": bench_commit,
         "qaic_sdk": sdk.splitlines()[0] if sdk else "unknown",
+        "host_ram_gb": round(psutil.virtual_memory().total / 1e9, 1) if psutil else None,
         "started": time.strftime("%Y-%m-%d %H:%M:%S"),
         **env,
     }
@@ -348,14 +354,18 @@ def benchmark_model(model, cases, args, out_csv):
 
     for group in groups.values():
         print(f"\n=== {model_name} / compile for {', '.join(c['id'] for c in group)} ===", flush=True)
+        host = benchmark.host_memory_sampler()
         try:
-            qeff_model, qpc_path = benchmark.load_and_compile(group[0], case_args)
+            with host:
+                qeff_model, qpc_path = benchmark.load_and_compile(group[0], case_args)
         except Exception as exc:  # one failed compile must not lose the other shapes
             print(f"compile failed: {exc}", flush=True)
             for case in group:
                 failures.append({"id": case["id"], "error": f"compile: {exc}"})
-                write(benchmark.failed_row(case, model_name, "failed", f"compile: {exc}"))
+                row = benchmark.failed_row(case, model_name, "failed", f"compile: {exc}")
+                write({**row, "host_peak_gb_compile": host.peak(1)})
             continue
+        compile_peak = host.peak(1)
         for case in group:
             print(f"\n=== {model_name} / {case['id']} ===", flush=True)
             try:
@@ -364,7 +374,9 @@ def benchmark_model(model, cases, args, out_csv):
                 print(f"{case['id']} failed: {exc}", flush=True)
                 failures.append({"id": case["id"], "error": str(exc)})
                 row = benchmark.failed_row(case, model_name, "failed", str(exc))
-            write({**row, "est_memory_gb": estimate_memory_gb(model["info"], case)})
+            write(
+                {**row, "est_memory_gb": estimate_memory_gb(model["info"], case), "host_peak_gb_compile": compile_peak}
+            )
         del qeff_model
         gc.collect()
     return failures

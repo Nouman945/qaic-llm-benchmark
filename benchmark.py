@@ -31,6 +31,10 @@ import threading
 import time
 from pathlib import Path
 
+try:
+    import psutil
+except ImportError:  # not a QEfficient dependency; the host RAM columns stay empty without it
+    psutil = None
 from QEfficient import QEFFAutoModelForCausalLM
 from transformers import AutoTokenizer
 
@@ -73,6 +77,8 @@ CSV_FIELDS = [
     "energy_usd_per_1m_output_tokens",
     "tok_s_per_dollar",
     "est_memory_gb",
+    "host_peak_gb_compile",
+    "host_peak_gb_run",
     "qpc",
     "timestamp",
 ]
@@ -104,11 +110,26 @@ def read_board_power(devices):
     return max(values) if values else None
 
 
-class PowerSampler:
-    """Samples board power on a thread until stopped."""
+def read_host_rss_gb():
+    """Resident memory of this process and every child (qaic-compile runs as one), like QEfficient's
+    scripts/memory_profiling. None without psutil."""
+    if psutil is None:
+        return None
+    process = psutil.Process()
+    total = 0
+    for proc in [process, *process.children(recursive=True)]:
+        try:
+            total += proc.memory_info().rss
+        except (psutil.NoSuchProcess, psutil.AccessDenied):  # a child can exit between listing and reading
+            pass
+    return total / 1e9
 
-    def __init__(self, devices, interval_s=0.5):
-        self.devices = devices
+
+class Sampler:
+    """Calls read() on a thread until stopped and keeps the values that are not None."""
+
+    def __init__(self, read, interval_s=0.5):
+        self.read = read
         self.interval_s = interval_s
         self.samples = []
         self._stop = threading.Event()
@@ -116,7 +137,7 @@ class PowerSampler:
 
     def _run(self):
         while not self._stop.is_set():
-            value = read_board_power(self.devices)
+            value = self.read()
             if value is not None:
                 self.samples.append(value)
             self._stop.wait(self.interval_s)
@@ -129,11 +150,21 @@ class PowerSampler:
         self._stop.set()
         self._thread.join(timeout=15)
 
-    def peak(self):
-        return max(self.samples) if self.samples else None
+    def peak(self, digits=None):
+        if not self.samples:
+            return None
+        return round(max(self.samples), digits) if digits is not None else max(self.samples)
 
     def mean(self):
         return round(statistics.mean(self.samples), 1) if self.samples else None
+
+
+def power_sampler(devices):
+    return Sampler(lambda: read_board_power(devices))
+
+
+def host_memory_sampler():
+    return Sampler(read_host_rss_gb)
 
 
 PROMPT_TEXT = """
@@ -275,7 +306,7 @@ def measure(model, qpc_path, case, args, tokenizer):
     idle_w = read_board_power(devices)
 
     metrics = []
-    with PowerSampler(devices) as sampler:
+    with host_memory_sampler() as host, power_sampler(devices) as sampler:
         for _ in range(args.repeats):
             metrics.append(generate(case["generation_len"]).perf_metrics)
 
@@ -301,6 +332,7 @@ def measure(model, qpc_path, case, args, tokenizer):
         "mean_board_w": sampler.mean(),
         "tok_s_per_w": round(decode / decode_w, 4) if decode_w else "",
         "tok_s_per_dollar": round(decode / args.card_price_usd, 4) if args.card_price_usd else "",
+        "host_peak_gb_run": host.peak(1),
         "qpc": str(qpc_path),
     }
     row.update(cost_fields(row, args))
@@ -308,8 +340,9 @@ def measure(model, qpc_path, case, args, tokenizer):
 
 
 def run_case(case, args, tokenizer):
-    model, qpc_path = load_and_compile(case, args)
-    return measure(model, qpc_path, case, args, tokenizer)
+    with host_memory_sampler() as host:
+        model, qpc_path = load_and_compile(case, args)
+    return {**measure(model, qpc_path, case, args, tokenizer), "host_peak_gb_compile": host.peak(1)}
 
 
 def main():

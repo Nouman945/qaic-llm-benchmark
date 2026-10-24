@@ -116,6 +116,10 @@ The prompt is a prose text cut to exactly `input_len` tokens (`build_prompt` in 
 | `energy_usd_per_1m_output_tokens` | `joules_per_output_token x 1e6 / 3.6e6 x electricity_usd_per_kwh`, card power only |
 | `tok_s_per_dollar` | `decode_tok_s / card_price_usd`, only with `--card-price-usd` |
 | `est_memory_gb` | weights + KV at full context for every user, the number the fit check uses |
+| `host_peak_gb_compile` | peak host RAM (resident memory of the runner and its children, `qaic-compile` included) while the model loads, exports and compiles; one value per compile, repeated on every row that shares the QPC. With a cached QPC and ONNX it shows the load only |
+| `host_peak_gb_run` | peak host RAM during the timed runs |
+
+Host RAM is sampled every 0.5 s with `psutil`, the same way as QEfficient's `scripts/memory_profiling`; without `psutil` the two columns stay empty. `meta.json` records the host's total RAM (`host_ram_gb`). A compile that runs out of host RAM is usually killed by the kernel, which stops the whole run: check `dmesg` and rerun with `--resume`.
 
 Cost basis: Qualcomm does not publish a price per token; it quotes performance per watt and per TCO dollar, and rents the card through cloud partners. The default `--card-hour-usd 0.80` is Cirrascale's 8x AI 100 Ultra server at $4,699 a month (4699 / 8 cards / 730 hours). `--electricity-usd-per-kwh` defaults to 0.13, about the US commercial average. Both values are in every row and in `meta.json`. The cost columns are computed when a case is measured, so for another price recompute them in the spreadsheet from `total_tok_s`, `input_len`, `batch_size`, `e2e_s` and `mean_board_w` with the formulas above; `--report-only` does not change them.
 
