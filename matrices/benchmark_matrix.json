@@ -1,0 +1,10 @@
+[
+  {"id": "fp16_1dev_ctx4k", "devices": [0], "mxfp6": false, "mxint8_kv_cache": false, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 1},
+  {"id": "mx_1dev_ctx4k", "devices": [0], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 1},
+  {"id": "mx_4dev_ctx4k", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 1},
+  {"id": "mx_4dev_ctx4k_in1k", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 4096, "input_len": 1024, "generation_len": 256, "batch_size": 1},
+  {"id": "mx_4dev_ctx8k_in4k", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 8192, "input_len": 4096, "generation_len": 256, "batch_size": 1},
+  {"id": "mx_4dev_ctx4k_cb4", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 4},
+  {"id": "mx_4dev_ctx4k_cb8", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 8},
+  {"id": "mx_4dev_ctx4k_cb16", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 128, "ctx_len": 4096, "input_len": 128, "generation_len": 256, "batch_size": 16}
+]

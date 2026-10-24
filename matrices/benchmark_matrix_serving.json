@@ -1,0 +1,20 @@
+[
+  {"id": "in1k_out1k_c1", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 1},
+  {"id": "in1k_out1k_c2", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 2},
+  {"id": "in1k_out1k_c4", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 4},
+  {"id": "in1k_out1k_c8", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 8},
+  {"id": "in1k_out1k_c16", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 16},
+  {"id": "in1k_out1k_c32", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 2048, "input_len": 1024, "generation_len": 1024, "batch_size": 32},
+  {"id": "in1k_out10k_c1", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 1},
+  {"id": "in1k_out10k_c2", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 2},
+  {"id": "in1k_out10k_c4", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 4},
+  {"id": "in1k_out10k_c8", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 8},
+  {"id": "in1k_out10k_c16", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 16},
+  {"id": "in1k_out10k_c32", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 1024, "generation_len": 10240, "batch_size": 32},
+  {"id": "in10k_out1k_c1", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 1},
+  {"id": "in10k_out1k_c2", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 2},
+  {"id": "in10k_out1k_c4", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 4},
+  {"id": "in10k_out1k_c8", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 8},
+  {"id": "in10k_out1k_c16", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 16},
+  {"id": "in10k_out1k_c32", "devices": [0, 1, 2, 3], "mxfp6": true, "mxint8_kv_cache": true, "prefill_seq_len": 1024, "ctx_len": 11264, "input_len": 10240, "generation_len": 1024, "batch_size": 32}
+]
